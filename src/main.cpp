@@ -19,22 +19,26 @@ void printRoads(std::vector<std::vector<int>> roads)
     }
 }
 
+void addRoadToCities(int city1, int city2, std::vector<std::vector<int>>& roads)
+{
+    roads[city1].push_back(city2);
+    roads[city2].push_back(city1);
+}
+
 int main() {
-    std::vector<int> cities = {0};
     std::vector<std::vector<int>> roads = {{}};
+    srand(time(0)); // Setting random number seed so that it generates different random numbers each time the program is run
 
     for (int i = 1; i < MAX_AMOUNT_CITIES; i++) {
-        cities.push_back(i);
-        std::vector<int> city_roads;
+        roads.push_back({});
         // Road to most recent city:
-        city_roads.push_back(i - 1);
+        addRoadToCities(i, i - 1, roads);
         // Road to other random city already build:
         if (i != 1)
         {
             int random_city = rand() % (i - 1); // Range [0-(i-2)]
-            city_roads.push_back(random_city);
+            addRoadToCities(i, random_city, roads);
         }
-        roads.push_back(city_roads);
     }
 
     printRoads(roads);
