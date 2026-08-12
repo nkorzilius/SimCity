@@ -3,12 +3,14 @@
 #include <limits>
 #include <iostream>
 
-void findOptimalRoute(int startCity, int endCity, const std::vector<std::vector<int>>& roads) 
+void findOptimalRoute(const std::vector<std::vector<int>>& roads) 
 {
     std::cout << roads.size() << std::endl;
-    // Find shortest path between startCity & EndCity
-    // Asume all roads are equal in length 
-    // Print the result as a list of cities to traverse.
+    int startCity;
+    int endCity;
+    std::pair<int,int> city_indices;
+    city_indices = askUserInputCities(roads.size());
+    findDijkstraOptimalRoute(city_indices.first, city_indices.second, roads);
 }
 
 // Dijkstra algorithm:
@@ -78,4 +80,36 @@ void printVector(std::vector<int> vec)
     }
     std::cout << "]" << std::endl;
     std::cout << "------------------ " << std::endl;
+}
+
+std::pair<int, int> askUserInputCities(int max_cities)
+{
+    std::cout << "Entering Starting City" << std::endl;
+    int startCity = askUserInputCity(max_cities);
+    std::cout << "Entering Ending City" << std::endl;
+    int endCity = askUserInputCity(max_cities);
+
+    return {startCity, endCity};
+}
+
+int askUserInputCity(int max_cities)
+{
+    std::cout << "Enter number in range [0-" << max_cities-1 << "]"<< std::endl;
+    int city_index;
+    int userInput;
+    bool input_valid = false;
+    while (!input_valid)
+    {
+        std::cin >> userInput;
+        if (userInput >= 0 && userInput <= max_cities)
+        {
+            city_index = userInput;
+            input_valid = true;
+        }
+        else
+        {
+            std::cout << "Invalid input, enter number in range [0-"<< max_cities << "]"<< std::endl;
+        }
+    }
+    return city_index;
 }
