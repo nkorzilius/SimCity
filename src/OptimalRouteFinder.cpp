@@ -3,14 +3,14 @@
 #include <limits>
 #include <iostream>
 
-void findOptimalRoute(const std::vector<std::vector<int>>& roads) 
+OptimalRouteFinder::OptimalRouteFinder(int max_cities){
+    this->m_max_cities = max_cities;
+}
+
+void OptimalRouteFinder::findOptimalRoute(const std::vector<std::vector<int>>& roads) 
 {
-    std::cout << roads.size() << std::endl;
-    int startCity;
-    int endCity;
-    std::pair<int,int> city_indices;
-    city_indices = askUserInputCities(roads.size());
-    findDijkstraOptimalRoute(city_indices.first, city_indices.second, roads);
+    askUserInputCities();
+    findDijkstraOptimalRoute(roads);
 }
 
 // Dijkstra algorithm:
@@ -18,18 +18,18 @@ void findOptimalRoute(const std::vector<std::vector<int>>& roads)
 // 2. Assign a tentative distance value to every node: set it to zero for our initial node and to inifite for all others
 // 3. Calculate the tentative distance of each unvisited neighbor of the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one.
 
-void findDijkstraOptimalRoute(int startCity, int endCity, const std::vector<std::vector<int>>& roads) 
+void OptimalRouteFinder::findDijkstraOptimalRoute(const std::vector<std::vector<int>>& roads) 
 {
     // Initialization: 
     std::vector<int> distances(roads.size(), std::numeric_limits<int>::max());
-    distances[startCity] = 0;
+    distances[m_start_city] = 0;
     std::vector<int> visited_cities;
     std::vector<int> unvisited_cities;
     for (int i = 0; i < static_cast<int>(roads.size()); ++i)
         unvisited_cities.push_back(i);
     
     std::vector<std::string> optimal_route(roads.size(), "");
-    int city_index = startCity;
+    int city_index = m_start_city;
 
     // Loop over all cities to calculate the distance to all other cities:
     while (!unvisited_cities.empty())
@@ -56,11 +56,11 @@ void findDijkstraOptimalRoute(int startCity, int endCity, const std::vector<std:
 
     std::cout << "Distances: " << std::endl;
     printVector(distances);
-    std::cout << "Optimal Route from: " << startCity << " to " << endCity << std::endl;
-    std::cout << optimal_route[endCity] << std::endl;
+    std::cout << "Optimal Route from: " << m_start_city << " to " << m_end_city << std::endl;
+    std::cout << optimal_route[m_end_city] << std::endl;
 }
 
-void updateCityVectors(std::vector<int>* visited, std::vector<int>* unvisited, int city_index)
+void OptimalRouteFinder::updateCityVectors(std::vector<int>* visited, std::vector<int>* unvisited, int city_index)
 {
     visited->push_back(city_index);
 
@@ -71,7 +71,7 @@ void updateCityVectors(std::vector<int>* visited, std::vector<int>* unvisited, i
     }
 }
 
-void printVector(std::vector<int> vec)
+void OptimalRouteFinder::printVector(std::vector<int> vec)
 {
     std::cout << "[";
     for (int i=0; i<vec.size(); i++)
@@ -82,33 +82,31 @@ void printVector(std::vector<int> vec)
     std::cout << "------------------ " << std::endl;
 }
 
-std::pair<int, int> askUserInputCities(int max_cities)
+void OptimalRouteFinder::askUserInputCities()
 {
     std::cout << "Entering Starting City" << std::endl;
-    int startCity = askUserInputCity(max_cities);
+    m_start_city = askUserInputCity();
     std::cout << "Entering Ending City" << std::endl;
-    int endCity = askUserInputCity(max_cities);
-
-    return {startCity, endCity};
+    m_end_city = askUserInputCity();
 }
 
-int askUserInputCity(int max_cities)
+int OptimalRouteFinder::askUserInputCity()
 {
-    std::cout << "Enter number in range [0-" << max_cities-1 << "]"<< std::endl;
+    std::cout << "Enter number in range [0-" << m_max_cities-1 << "]"<< std::endl;
     int city_index;
     int userInput;
     bool input_valid = false;
     while (!input_valid)
     {
         std::cin >> userInput;
-        if (userInput >= 0 && userInput <= max_cities)
+        if (userInput >= 0 && userInput <= m_max_cities)
         {
             city_index = userInput;
             input_valid = true;
         }
         else
         {
-            std::cout << "Invalid input, enter number in range [0-"<< max_cities << "]"<< std::endl;
+            std::cout << "Invalid input, enter number in range [0-"<< m_max_cities << "]"<< std::endl;
         }
     }
     return city_index;
