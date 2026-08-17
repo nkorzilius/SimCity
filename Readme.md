@@ -65,3 +65,21 @@ Run:
 ```sh
 ./build/SimCity
 ```
+
+## Run Tests
+
+The tests live in the `/tests/` directory and use GoogleTest (downloaded via CMake's
+`FetchContent` on first configure, so network access is required the first time).
+
+Configure, build and run tests:
+```sh
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build -- -j
+ctest --test-dir build --output-on-failure
+```
+
+Or run the test binary directly:
+```sh
+./build/tests/unit_tests --gtest_list_tests
+./build/tests/unit_tests
+```
