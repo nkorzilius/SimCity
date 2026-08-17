@@ -43,12 +43,17 @@ Dijkstra algorithm:
 
 Clone the repository:
 ```sh
-git clone https://github.com/nkorzilius/SimCity.git .
+git clone https://github.com/nkorzilius/SimCity.git SimCity
 ```
 
 Navigate to the directory containing the code
 ```sh
 cd SimCity
+```
+
+Configure:
+```sh
+cmake -S . -B build
 ```
 
 Build:
@@ -58,5 +63,5 @@ cmake --build build
 
 Run:
 ```sh
-
+./build/SimCity
 ```
