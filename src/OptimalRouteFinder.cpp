@@ -1,10 +1,10 @@
 #include "OptimalRouteFinder.hpp"
-#include <algorithm>
-#include <limits>
-#include <iostream>
+#include "DisplayPrint.hpp"
 
 OptimalRouteFinder::OptimalRouteFinder(int max_cities){
     this->m_max_cities = max_cities;
+    for (int i = 0; i < max_cities; ++i)
+        m_unvisited_cities.push_back(i);
 }
 
 void OptimalRouteFinder::findOptimalRoute(const std::vector<std::vector<int>>& roads) 
@@ -13,27 +13,31 @@ void OptimalRouteFinder::findOptimalRoute(const std::vector<std::vector<int>>& r
     findDijkstraOptimalRoute(roads);
 }
 
-// Dijkstra algorithm:
-// 1. Create a set of unvisited nodes (cities) and a set of visited nodes (cities).
-// 2. Assign a tentative distance value to every node: set it to zero for our initial node and to inifite for all others
-// 3. Calculate the tentative distance of each unvisited neighbor of the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one.
-
 void OptimalRouteFinder::findDijkstraOptimalRoute(const std::vector<std::vector<int>>& roads) 
 {
     // Initialization: 
     std::vector<int> distances(roads.size(), std::numeric_limits<int>::max());
     distances[m_start_city] = 0;
-    std::vector<int> visited_cities;
-    std::vector<int> unvisited_cities;
-    for (int i = 0; i < static_cast<int>(roads.size()); ++i)
-        unvisited_cities.push_back(i);
     
     std::vector<std::string> optimal_route(roads.size(), "");
     int city_index = m_start_city;
 
     // Loop over all cities to calculate the distance to all other cities:
-    while (!unvisited_cities.empty())
+    while (!m_unvisited_cities.empty())
     {
+        // Updating city Index:
+        if (!m_visited_cities.empty())
+        {
+            city_index = getNextCityIndex(city_index, roads);
+            // if new city_index already visited:
+            if (cityAlreadyVisited(city_index))
+            {
+                std::cout << "Selected City already Visited, Unvisited cities: " << std::endl;
+                printVector(m_unvisited_cities);
+                break;
+            }
+        }
+        // Updating Distances & optimal route: 
         for (auto neighbor: roads[city_index])
         {
             if (distances[neighbor] > distances[city_index]+1)
@@ -42,16 +46,8 @@ void OptimalRouteFinder::findDijkstraOptimalRoute(const std::vector<std::vector<
                 optimal_route[neighbor] = optimal_route[city_index]+ "->" + std::to_string(city_index);
             }
         }
-        updateCityVectors(&visited_cities, &unvisited_cities, city_index);
-        // Select the next city to visit from the unvisited cities:
-        for (int neighbour : roads[city_index])
-        {
-            if (std::find(unvisited_cities.begin(), unvisited_cities.end(), neighbour) != unvisited_cities.end())
-            {
-                city_index = neighbour;
-                break;
-            }
-        }
+
+        updateCityVectors(city_index);
     }
 
     std::cout << "Distances: " << std::endl;
@@ -60,34 +56,31 @@ void OptimalRouteFinder::findDijkstraOptimalRoute(const std::vector<std::vector<
     std::cout << optimal_route[m_end_city] << std::endl;
 }
 
-void OptimalRouteFinder::updateCityVectors(std::vector<int>* visited, std::vector<int>* unvisited, int city_index)
+void OptimalRouteFinder::updateCityVectors(int city_index)
 {
-    visited->push_back(city_index);
+    m_visited_cities.push_back(city_index);
 
-    auto it = std::find(unvisited->begin(), unvisited->end(), city_index);
-    if (it != unvisited->end())
+    auto it = std::find(m_unvisited_cities.begin(), m_unvisited_cities.end(), city_index);
+    if (it != m_unvisited_cities.end())
     {
-        unvisited->erase(it);
+        m_unvisited_cities.erase(it);
     }
-}
-
-void OptimalRouteFinder::printVector(std::vector<int> vec)
-{
-    std::cout << "[";
-    for (int i=0; i<vec.size(); i++)
-    {
-        std::cout<< vec[i] << " ";
-    }
-    std::cout << "]" << std::endl;
-    std::cout << "------------------ " << std::endl;
 }
 
 void OptimalRouteFinder::askUserInputCities()
 {
     std::cout << "Entering Starting City" << std::endl;
     m_start_city = askUserInputCity();
+
     std::cout << "Entering Ending City" << std::endl;
-    m_end_city = askUserInputCity();
+    while (true)
+    {
+        m_end_city = askUserInputCity();
+        if (m_end_city != m_start_city)
+            break;
+
+        std::cout << "Start and End City are the same, enter different number than " << m_start_city << std::endl;
+    }
 }
 
 int OptimalRouteFinder::askUserInputCity()
@@ -110,4 +103,41 @@ int OptimalRouteFinder::askUserInputCity()
         }
     }
     return city_index;
+}
+
+int OptimalRouteFinder::getNextCityIndex(int current_index, const std::vector<std::vector<int>>& roads)
+{
+    int next_index = current_index;
+    std::vector<int> neighbours = roads[current_index];
+    // Check if any of the currently selected neighbours has not been visited yet:
+    for (int neighbour : neighbours)
+    {
+        // Select the first unvisited neighbour as the next city to visit:
+        if (cityUnvisited(neighbour))
+        {
+            return neighbour;
+        }
+    }
+    // If all neighbours have been visited, Check if any of the neighbours neighbours has not been visited yet!
+    for (int neighbour : neighbours)
+    {
+        for (int subneighbour : roads[neighbour])
+        {
+            if (cityUnvisited(subneighbour))
+            {
+                return subneighbour;
+            }
+        }
+    }
+    return next_index;
+}
+
+bool OptimalRouteFinder::cityAlreadyVisited(int city)
+{
+    return std::find(m_visited_cities.begin(), m_visited_cities.end(), city) != m_visited_cities.end();
+}
+
+bool OptimalRouteFinder::cityUnvisited(int city)
+{
+    return std::find(m_unvisited_cities.begin(), m_unvisited_cities.end(), city) != m_unvisited_cities.end();
 }
