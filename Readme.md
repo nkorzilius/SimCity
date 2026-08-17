@@ -22,3 +22,41 @@ Now, imagine that you've been asked by this nation's postal service to write a p
 
 For the example above, this might look like: Shortest Path from City 3 to City 1: [3, 2, 1]
 
+## Solution 
+
+### Part 1
+Generating the cities and roads is implemented in `MapGenerator`. \
+Based on the `max_amount_of_cities`, generates a matrix `roads` (`vector<vector<int>>`).\
+The random number generator uses a seed based on time so that it generates a different set of connections each time.
+
+### Part 2
+Finding the optimal route based on the generated cities and connections is implemented in `OptimalRouteFinder`.
+
+Using the Dijkstra Algorithm for finding the optimal route between 2 cities given vertex length (here every vertex length = 1)
+
+Dijkstra algorithm:
+1. Create a set of unvisited nodes (cities) and a set of visited nodes (cities).
+2. Assign a tentative distance value to every node: set it to zero for our initial node and to inifite for all others
+3. Calculate the tentative distance of each unvisited neighbor of the current node. Compare the newly calculated tentative distance to the current assigned value and assign the smaller one.
+
+## Run Program
+
+Clone the repository:
+```sh
+git clone https://github.com/nkorzilius/SimCity.git .
+```
+
+Navigate to the directory containing the code
+```sh
+cd SimCity
+```
+
+Build:
+```sh
+cmake --build build
+```
+
+Run:
+```sh
+
+```
