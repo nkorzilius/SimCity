@@ -12,7 +12,7 @@ enable_testing() #to  discover tests in test explorer
 add_library(simcity_lib
 	src/MapGenerator.cpp
 	src/OptimalRouteFinder.cpp
-	src/DisplayPrint.cpp
+	src/DisplayInteraction.cpp
 )
 
 target_include_directories(simcity_lib PUBLIC ${CMAKE_SOURCE_DIR}/src)

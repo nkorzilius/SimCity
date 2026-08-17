@@ -1,5 +1,5 @@
 #include "MapGenerator.hpp"
-#include "DisplayPrint.hpp"
+#include "DisplayInteraction.hpp"
 
 MapGenerator::MapGenerator(int max_amount_cities) {
     this->m_max_amount_cities = max_amount_cities;

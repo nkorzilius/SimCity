@@ -7,7 +7,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-add_executable(unit_tests MapGeneratorTest.cpp)
+add_executable(unit_tests MapGeneratorTest.cpp OptimalRouteFinderTest.cpp)
 target_include_directories(unit_tests PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(unit_tests PRIVATE gtest_main simcity_lib)
 
